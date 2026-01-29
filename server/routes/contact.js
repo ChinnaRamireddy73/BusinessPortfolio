@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Contact = require('../models/Contact');
+const auth = require('../middleware/auth');
 
 // Submit contact form
 router.post('/', async (req, res) => {
@@ -22,7 +23,7 @@ router.post('/', async (req, res) => {
 });
 
 // Get all submissions (Admin)
-router.get('/', async (req, res) => {
+router.get('/', auth, async (req, res) => {
     try {
         const contacts = await Contact.find().sort({ createdAt: -1 });
         res.json(contacts);

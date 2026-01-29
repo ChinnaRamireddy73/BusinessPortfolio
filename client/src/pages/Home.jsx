@@ -4,6 +4,7 @@ import ProjectCard from '../components/ProjectCard';
 import ClientCard from '../components/ClientCard';
 import ContactForm from '../components/ContactForm';
 import Newsletter from '../components/Newsletter';
+import Slider from '../components/Slider';
 
 const Home = () => {
     const [projects, setProjects] = useState([]);
@@ -24,45 +25,45 @@ const Home = () => {
     }, []);
 
     return (
-        <div className="home-page">
+        <div className="home-page fade-in">
             {/* Hero Section */}
             <section className="hero" style={{ textAlign: 'center', padding: '100px 20px', background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)' }}>
-                <div className="container">
+                <div className="container slide-up">
                     <h1 style={{ fontSize: '3rem', marginBottom: '20px' }}>Building Dreams, Creating Reality</h1>
                     <p style={{ fontSize: '1.2rem', maxWidth: '600px', margin: '0 auto 30px' }}>We deliver top-tier business solutions for clients worldwide.</p>
                     <button className="btn">View Our Work</button>
                 </div>
             </section>
 
-            {/* Projects Section */}
+            {/* Projects Section - Cinematic Slider */}
             <section id="projects" className="projects-section">
                 <div className="container">
                     <h2 style={{ textAlign: 'center', marginBottom: '40px' }}>Our Projects</h2>
-                    <div className="projects-grid">
-                        {projects.length > 0 ? (
-                            projects.map(project => (
+                    {projects.length > 0 ? (
+                        <Slider slidesPerView={3}>
+                            {projects.map(project => (
                                 <ProjectCard key={project._id} project={project} />
-                            ))
-                        ) : (
-                            <p className="no-data" style={{ textAlign: 'center', width: '100%' }}>No projects found. Add some from Admin Panel.</p>
-                        )}
-                    </div>
+                            ))}
+                        </Slider>
+                    ) : (
+                        <p className="no-data" style={{ textAlign: 'center' }}>No projects found. Add some from Sidebar.</p>
+                    )}
                 </div>
             </section>
 
-            {/* Clients Section */}
+            {/* Clients Section - Cinematic Slider */}
             <section id="clients" className="clients-section" style={{ background: '#f9f9f9' }}>
                 <div className="container">
                     <h2 style={{ textAlign: 'center', marginBottom: '40px' }}>Happy Clients</h2>
-                    <div className="clients-grid">
-                        {clients.length > 0 ? (
-                            clients.map(client => (
+                    {clients.length > 0 ? (
+                        <Slider slidesPerView={3} autoplay={true}>
+                            {clients.map(client => (
                                 <ClientCard key={client._id} client={client} />
-                            ))
-                        ) : (
-                            <p className="no-data" style={{ textAlign: 'center', width: '100%' }}>No clients yet.</p>
-                        )}
-                    </div>
+                            ))}
+                        </Slider>
+                    ) : (
+                        <p className="no-data" style={{ textAlign: 'center' }}>No clients yet.</p>
+                    )}
                 </div>
             </section>
 

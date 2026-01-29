@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
+const seedAdmin = require('./utils/seedAdmin');
 require('dotenv').config();
 
 const app = express();
@@ -14,7 +15,10 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Database Connection
 mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/business_portfolio')
-    .then(() => console.log('MongoDB Connected'))
+    .then(async () => {
+        console.log('MongoDB Connected');
+        await seedAdmin();
+    })
     .catch(err => console.log(err));
 
 // Routes Placeholder
@@ -26,10 +30,12 @@ const projectRoutes = require('./routes/projects');
 const clientRoutes = require('./routes/clients');
 const contactRoutes = require('./routes/contact');
 const subscribeRoutes = require('./routes/subscribe');
+const authRoutes = require('./routes/auth');
 
 app.use('/api/projects', projectRoutes);
 app.use('/api/clients', clientRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/subscribe', subscribeRoutes);
+app.use('/api/auth', authRoutes);
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

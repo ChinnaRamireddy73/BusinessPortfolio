@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Project = require('../models/Project');
 const upload = require('../middleware/upload');
+const auth = require('../middleware/auth');
 
 // Get all projects
 router.get('/', async (req, res) => {
@@ -14,7 +15,7 @@ router.get('/', async (req, res) => {
 });
 
 // Add a project
-router.post('/', upload.single('image'), async (req, res) => {
+router.post('/', auth, upload.single('image'), async (req, res) => {
     const { name, description, link } = req.body;
     let image = '';
 
@@ -38,7 +39,7 @@ router.post('/', upload.single('image'), async (req, res) => {
 });
 
 // Update a project
-router.put('/:id', upload.single('image'), async (req, res) => {
+router.put('/:id', auth, upload.single('image'), async (req, res) => {
     try {
         const project = await Project.findById(req.params.id);
         if (!project) return res.status(404).json({ message: 'Project not found' });
@@ -58,7 +59,7 @@ router.put('/:id', upload.single('image'), async (req, res) => {
 });
 
 // Delete a project
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', auth, async (req, res) => {
     try {
         const project = await Project.findById(req.params.id);
         if (!project) return res.status(404).json({ message: 'Project not found' });

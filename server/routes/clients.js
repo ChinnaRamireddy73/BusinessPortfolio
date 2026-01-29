@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Client = require('../models/Client');
 const upload = require('../middleware/upload');
+const auth = require('../middleware/auth');
 
 // Get all clients
 router.get('/', async (req, res) => {
@@ -14,7 +15,7 @@ router.get('/', async (req, res) => {
 });
 
 // Add a client
-router.post('/', upload.single('image'), async (req, res) => {
+router.post('/', auth, upload.single('image'), async (req, res) => {
     const { name, designation, description } = req.body;
     let image = '';
 
@@ -38,7 +39,7 @@ router.post('/', upload.single('image'), async (req, res) => {
 });
 
 // Update a client
-router.put('/:id', upload.single('image'), async (req, res) => {
+router.put('/:id', auth, upload.single('image'), async (req, res) => {
     try {
         const client = await Client.findById(req.params.id);
         if (!client) return res.status(404).json({ message: 'Client not found' });
@@ -58,7 +59,7 @@ router.put('/:id', upload.single('image'), async (req, res) => {
 });
 
 // Delete a client
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', auth, async (req, res) => {
     try {
         const client = await Client.findById(req.params.id);
         if (!client) return res.status(404).json({ message: 'Client not found' });

@@ -1,11 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import api from '../api';
+import Modal from '../components/Modal';
+import { useToast } from '../context/ToastContext';
 
 const ManageProjects = () => {
     const [projects, setProjects] = useState([]);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [currentProject, setCurrentProject] = useState(null);
+    const [projectToDelete, setProjectToDelete] = useState(null);
+
+    // Form State
     const [formData, setFormData] = useState({ name: '', description: '', link: '' });
     const [image, setImage] = useState(null);
-    const [editId, setEditId] = useState(null);
+    const [preview, setPreview] = useState(null);
+    const [loading, setLoading] = useState(false);
+
+    const { addToast } = useToast();
 
     const fetchProjects = async () => {
         try {
@@ -13,6 +24,7 @@ const ManageProjects = () => {
             setProjects(res.data);
         } catch (err) {
             console.error(err);
+            addToast('Failed to load projects', 'error');
         }
     };
 
@@ -20,16 +32,51 @@ const ManageProjects = () => {
         fetchProjects();
     }, []);
 
+    const resetForm = () => {
+        setFormData({ name: '', description: '', link: '' });
+        setImage(null);
+        setPreview(null);
+        setCurrentProject(null);
+        setIsModalOpen(false);
+    };
+
+    const handleOpenAdd = () => {
+        resetForm();
+        setIsModalOpen(true);
+    };
+
+    const handleOpenEdit = (project) => {
+        setCurrentProject(project);
+        setFormData({
+            name: project.name,
+            description: project.description,
+            link: project.link || ''
+        });
+        setPreview(`http://localhost:5000${project.image}`);
+        setImage(null);
+        setIsModalOpen(true);
+    };
+
+    const handleOpenDelete = (project) => {
+        setProjectToDelete(project);
+        setIsDeleteModalOpen(true);
+    };
+
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
     const handleImageChange = (e) => {
-        setImage(e.target.files[0]);
+        const file = e.target.files[0];
+        if (file) {
+            setImage(file);
+            setPreview(URL.createObjectURL(file));
+        }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
         const data = new FormData();
         data.append('name', formData.name);
         data.append('description', formData.description);
@@ -37,51 +84,46 @@ const ManageProjects = () => {
         if (image) data.append('image', image);
 
         try {
-            if (editId) {
-                await api.put(`/projects/${editId}`, data);
+            if (currentProject) {
+                await api.put(`/projects/${currentProject._id}`, data);
+                addToast('Project updated successfully', 'success');
             } else {
                 await api.post('/projects', data);
+                addToast('Project created successfully', 'success');
             }
-            setFormData({ name: '', description: '', link: '' });
-            setImage(null);
-            setEditId(null);
             fetchProjects();
+            resetForm();
         } catch (err) {
             console.error(err);
+            addToast('Operation failed. Please try again.', 'error');
+        } finally {
+            setLoading(false);
         }
     };
 
-    const handleEdit = (project) => {
-        setFormData({ name: project.name, description: project.description, link: project.link || '' });
-        setEditId(project._id);
-    };
-
-    const handleDelete = async (id) => {
-        if (window.confirm('Are you sure?')) {
-            try {
-                await api.delete(`/projects/${id}`);
-                fetchProjects();
-            } catch (err) {
-                console.error(err);
-            }
+    const handleDelete = async () => {
+        if (!projectToDelete) return;
+        try {
+            await api.delete(`/projects/${projectToDelete._id}`);
+            addToast('Project deleted successfully', 'success');
+            fetchProjects();
+            setIsDeleteModalOpen(false);
+            setProjectToDelete(null);
+        } catch (err) {
+            console.error(err);
+            addToast('Failed to delete project', 'error');
         }
     };
 
     return (
-        <div className="manage-page">
-            <h2>Manage Projects</h2>
-
-            <form onSubmit={handleSubmit} className="admin-form">
-                <input type="text" name="name" placeholder="Project Name" value={formData.name} onChange={handleChange} required />
-                <textarea name="description" placeholder="Description" value={formData.description} onChange={handleChange} required />
-                <input type="text" name="link" placeholder="Project Link (Optional)" value={formData.link} onChange={handleChange} />
-                <input type="file" onChange={handleImageChange} accept="image/*" />
-                <button type="submit" className="btn">{editId ? 'Update Project' : 'Add Project'}</button>
-                {editId && <button type="button" onClick={() => { setEditId(null); setFormData({ name: '', description: '', link: '' }); }} className="btn btn-cancel">Cancel Edit</button>}
-            </form>
+        <div className="manage-page fade-in">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+                <h2>Manage Projects</h2>
+                <button onClick={handleOpenAdd} className="btn">Add New Project</button>
+            </div>
 
             <div className="table-container">
-                <table className="admin-table">
+                <table>
                     <thead>
                         <tr>
                             <th>Image</th>
@@ -91,33 +133,89 @@ const ManageProjects = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {projects.map(project => (
+                        {projects.length > 0 ? projects.map(project => (
                             <tr key={project._id}>
                                 <td>
-                                    <img src={`http://localhost:5000${project.image}`} alt={project.name} width="50" />
+                                    <img
+                                        src={`http://localhost:5000${project.image}`}
+                                        alt={project.name}
+                                        style={{ width: 50, height: 50, objectFit: 'cover', borderRadius: 4 }}
+                                    />
                                 </td>
                                 <td>{project.name}</td>
                                 <td>{project.description.substring(0, 50)}...</td>
-                                <td>
-                                    <button onClick={() => handleEdit(project)} className="btn-icon">Edit</button>
-                                    <button onClick={() => handleDelete(project._id)} className="btn-icon btn-delete">Delete</button>
+                                <td className="actions-cell">
+                                    <button onClick={() => handleOpenEdit(project)} className="btn-icon">
+                                        ✏️
+                                    </button>
+                                    <button onClick={() => handleOpenDelete(project)} className="btn-icon delete">
+                                        🗑️
+                                    </button>
                                 </td>
                             </tr>
-                        ))}
+                        )) : (
+                            <tr>
+                                <td colSpan="4" style={{ textAlign: 'center', color: '#999' }}>No projects found.</td>
+                            </tr>
+                        )}
                     </tbody>
                 </table>
             </div>
-            <style>{`
-                .manage-page { max-width: 800px; }
-                .admin-form { display: flex; flex-direction: column; gap: 15px; background: #fff; padding: 20px; border-radius: 8px; margin-bottom: 30px; }
-                .admin-form input, .admin-form textarea { padding: 10px; border: 1px solid #ddd; border-radius: 4px; }
-                .table-container { background: #fff; padding: 20px; border-radius: 8px; }
-                .admin-table { width: 100%; border-collapse: collapse; }
-                .admin-table th, .admin-table td { padding: 15px; border-bottom: 1px solid #eee; text-align: left; }
-                .btn-icon { background: none; border: none; color: var(--secondary-color); font-size: 0.9rem; margin-right: 10px; text-decoration: underline; }
-                .btn-delete { color: #ff6b6b; }
-                .btn-cancel { background: #999; margin-left: 10px; }
-            `}</style>
+
+            {/* Add/Edit Modal */}
+            <Modal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                title={currentProject ? 'Edit Project' : 'Add New Project'}
+            >
+                <form onSubmit={handleSubmit} className="admin-form">
+                    <div className="form-group">
+                        <label>Project Name</label>
+                        <input type="text" name="name" value={formData.name} onChange={handleChange} required />
+                    </div>
+
+                    <div className="form-group">
+                        <label>Description</label>
+                        <textarea name="description" value={formData.description} onChange={handleChange} required />
+                    </div>
+
+                    <div className="form-group">
+                        <label>Project Link</label>
+                        <input type="text" name="link" value={formData.link} onChange={handleChange} />
+                    </div>
+
+                    <div className="form-group">
+                        <label>Project Image</label>
+                        <input type="file" onChange={handleImageChange} accept="image/*" />
+                        {preview && (
+                            <div style={{ marginTop: 10 }}>
+                                <img src={preview} alt="Preview" style={{ width: '100%', maxHeight: 200, objectFit: 'cover', borderRadius: 6 }} />
+                            </div>
+                        )}
+                    </div>
+
+                    <button type="submit" className="btn btn-block" disabled={loading}>
+                        {loading ? 'Saving...' : (currentProject ? 'Update Project' : 'Create Project')}
+                    </button>
+                </form>
+            </Modal>
+
+            {/* Delete Confirmation Modal */}
+            <Modal
+                isOpen={isDeleteModalOpen}
+                onClose={() => setIsDeleteModalOpen(false)}
+                title="Confirm Delete"
+            >
+                <div style={{ textAlign: 'center' }}>
+                    <p style={{ marginBottom: 20 }}>
+                        Are you sure you want to delete <strong>{projectToDelete?.name}</strong>? This action cannot be undone.
+                    </p>
+                    <div style={{ display: 'flex', gap: 10, justifyContent: 'center' }}>
+                        <button onClick={() => setIsDeleteModalOpen(false)} className="btn btn-secondary">Cancel</button>
+                        <button onClick={handleDelete} className="btn btn-danger">Delete</button>
+                    </div>
+                </div>
+            </Modal>
         </div>
     );
 };

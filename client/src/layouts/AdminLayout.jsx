@@ -1,11 +1,10 @@
 import React from 'react';
-import { Outlet, Link, useNavigate } from 'react-router-dom';
+import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import '../index.css';
 
 const AdminLayout = () => {
     const navigate = useNavigate();
-    // Simple check
-    const isAuthenticated = localStorage.getItem('adminAuth') === 'true';
+    const isAuthenticated = !!localStorage.getItem('token');
 
     React.useEffect(() => {
         if (!isAuthenticated) {
@@ -16,8 +15,16 @@ const AdminLayout = () => {
     if (!isAuthenticated) return null;
 
     const handleLogout = () => {
-        localStorage.removeItem('adminAuth');
+        localStorage.removeItem('token');
         navigate('/admin/login');
+    };
+
+    const handleViewSite = () => {
+        window.open('/', '_blank');
+    };
+
+    const handleRefresh = () => {
+        window.location.reload();
     };
 
     return (
@@ -28,77 +35,29 @@ const AdminLayout = () => {
                 </div>
                 <nav className="sidebar-nav">
                     <ul>
-                        <li><Link to="/admin/dashboard">Dashboard</Link></li>
-                        <li><Link to="/admin/projects">Manage Projects</Link></li>
-                        <li><Link to="/admin/clients">Manage Clients</Link></li>
-                        <li><Link to="/admin/inquiries">Inquiries</Link></li>
-                        <li><Link to="/admin/subscribers">Subscribers</Link></li>
+                        <li><NavLink to="/admin/dashboard" className={({ isActive }) => isActive ? 'active' : ''}>Dashboard</NavLink></li>
+                        <li><NavLink to="/admin/projects" className={({ isActive }) => isActive ? 'active' : ''}>Manage Projects</NavLink></li>
+                        <li><NavLink to="/admin/clients" className={({ isActive }) => isActive ? 'active' : ''}>Manage Clients</NavLink></li>
+                        <li><NavLink to="/admin/inquiries" className={({ isActive }) => isActive ? 'active' : ''}>Inquiries</NavLink></li>
+                        <li><NavLink to="/admin/subscribers" className={({ isActive }) => isActive ? 'active' : ''}>Subscribers</NavLink></li>
                     </ul>
                 </nav>
                 <div className="sidebar-footer">
                     <button onClick={handleLogout} className="btn-logout">Logout</button>
                 </div>
             </aside>
-            <main className="admin-content">
-                <Outlet />
+            <main className="admin-main">
+                <header className="admin-topbar">
+                    <h2 className="page-title">Management Console</h2>
+                    <div className="topbar-actions">
+                        <button onClick={handleViewSite} className="btn-sm btn-secondary">View Site</button>
+                        <button onClick={handleRefresh} className="btn-sm btn-secondary">Refresh</button>
+                    </div>
+                </header>
+                <div className="admin-content-wrapper">
+                    <Outlet />
+                </div>
             </main>
-
-            <style>{`
-        .admin-layout {
-            display: flex;
-            min-height: 100vh;
-        }
-        .sidebar {
-            width: 250px;
-            background: var(--primary-color);
-            color: #fff;
-            display: flex;
-            flex-direction: column;
-            padding: 20px;
-        }
-        .sidebar-header {
-            margin-bottom: 40px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            padding-bottom: 20px;
-        }
-        .sidebar-nav ul {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        .sidebar-nav a {
-            color: rgba(255,255,255,0.8);
-            display: block;
-            padding: 10px;
-            border-radius: 5px;
-        }
-        .sidebar-nav a:hover {
-            background: rgba(255,255,255,0.1);
-            color: #fff;
-        }
-        .sidebar-footer {
-            margin-top: auto;
-            border-top: 1px solid rgba(255,255,255,0.1);
-            padding-top: 20px;
-        }
-        .btn-logout {
-            background: transparent;
-            color: #ff6b6b;
-            border: 1px solid #ff6b6b;
-            width: 100%;
-            padding: 10px;
-            border-radius: 5px;
-        }
-        .btn-logout:hover {
-            background: #ff6b6b;
-            color: #fff;
-        }
-        .admin-content {
-            flex: 1;
-            padding: 40px;
-            background: #f4f6f8;
-        }
-      `}</style>
         </div>
     );
 };

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Subscriber = require('../models/Subscriber');
+const auth = require('../middleware/auth');
 
 // Subscribe
 router.post('/', async (req, res) => {
@@ -21,7 +22,7 @@ router.post('/', async (req, res) => {
 });
 
 // Get all subscribers (Admin)
-router.get('/', async (req, res) => {
+router.get('/', auth, async (req, res) => {
     try {
         const subscribers = await Subscriber.find().sort({ createdAt: -1 });
         res.json(subscribers);

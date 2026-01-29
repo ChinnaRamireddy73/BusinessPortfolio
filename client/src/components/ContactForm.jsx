@@ -31,7 +31,7 @@ const ContactForm = () => {
     };
 
     return (
-        <form className="contact-form" onSubmit={handleSubmit}>
+        <form className="contact-form" onSubmit={handleSubmit} style={{ maxWidth: 400, margin: '0 auto', background: '#fff', padding: 24, borderRadius: 10, boxShadow: '0 2px 12px #e3e3e3' }}>
             <div className="form-group">
                 <input
                     type="text"
@@ -75,8 +75,8 @@ const ContactForm = () => {
             <button type="submit" className="btn btn-submit" disabled={status === 'sending'}>
                 {status === 'sending' ? 'Sending...' : 'Send Message'}
             </button>
-            {status === 'success' && <p className="success-msg">Message sent successfully!</p>}
-            {status === 'error' && <p className="error-msg">Something went wrong. Try again.</p>}
+            {status === 'success' && <p style={{ color: 'green', marginTop: 10 }}>Message sent successfully!</p>}
+            {status === 'error' && <p style={{ color: 'red', marginTop: 10 }}>Something went wrong. Try again.</p>}
         </form>
     );
 };
