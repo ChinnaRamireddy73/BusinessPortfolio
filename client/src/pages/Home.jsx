@@ -37,11 +37,15 @@ const Home = () => {
     return (
         <div className="home-page fade-in">
             {/* Hero Section */}
-            <section className="hero" style={{ textAlign: 'center', padding: '100px 20px', background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)' }}>
+            <section className="hero" style={{ textAlign: 'center', padding: '120px 20px', background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)' }}>
                 <div className="container slide-up">
-                    <h1 style={{ fontSize: '3rem', marginBottom: '20px' }}>Building Dreams, Creating Reality</h1>
-                    <p style={{ fontSize: '1.2rem', maxWidth: '600px', margin: '0 auto 30px' }}>We deliver top-tier business solutions for clients worldwide.</p>
-                    <div style={{ display: 'flex', gap: '15px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                    <h1 style={{ fontSize: '3.5rem', marginBottom: '20px', fontWeight: '800' }}>Building Dreams, Creating Reality</h1>
+                    <p style={{ fontSize: '1.2rem', maxWidth: '700px', margin: '0 auto 15px', color: '#333' }}>We deliver top-tier business solutions for clients worldwide.</p>
+                    <p style={{ fontSize: '1rem', maxWidth: '700px', margin: '0 auto 40px', color: '#555', lineHeight: '1.6' }}>
+                        From concept to execution, we transform your vision into powerful digital solutions. 
+                        With years of expertise and a passion for innovation, we help businesses thrive in the digital age.
+                    </p>
+                    <div style={{ display: 'flex', gap: '15px', justifyContent: 'center', flexWrap: 'wrap', marginTop: '30px' }}>
                         <button className="btn" onClick={scrollToProjects}>View Our Work</button>
                         <button className="btn" onClick={scrollToContact} style={{ background: '#f39c12' }}>Get in Touch</button>
                     </div>
