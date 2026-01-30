@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import api from '../api';
 import ProjectCard from '../components/ProjectCard';
 import ClientCard from '../components/ClientCard';
@@ -9,6 +9,11 @@ import Slider from '../components/Slider';
 const Home = () => {
     const [projects, setProjects] = useState([]);
     const [clients, setClients] = useState([]);
+    const contactSectionRef = useRef(null);
+
+    const scrollToContact = () => {
+        contactSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
+    };
 
     useEffect(() => {
         const fetchData = async () => {
@@ -31,7 +36,7 @@ const Home = () => {
                 <div className="container slide-up">
                     <h1 style={{ fontSize: '3rem', marginBottom: '20px' }}>Building Dreams, Creating Reality</h1>
                     <p style={{ fontSize: '1.2rem', maxWidth: '600px', margin: '0 auto 30px' }}>We deliver top-tier business solutions for clients worldwide.</p>
-                    <button className="btn">View Our Work</button>
+                    <button className="btn" onClick={scrollToContact}>Get in Touch</button>
                 </div>
             </section>
 
@@ -68,7 +73,7 @@ const Home = () => {
             </section>
 
             {/* Contact Section */}
-            <section id="contact" className="contact-section">
+            <section id="contact" className="contact-section" ref={contactSectionRef}>
                 <div className="container">
                     <h2 style={{ textAlign: 'center', marginBottom: '40px' }}>Contact Us</h2>
                     <ContactForm />
