@@ -10,9 +10,14 @@ const Home = () => {
     const [projects, setProjects] = useState([]);
     const [clients, setClients] = useState([]);
     const contactSectionRef = useRef(null);
+    const projectsSectionRef = useRef(null);
 
     const scrollToContact = () => {
         contactSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
+    };
+
+    const scrollToProjects = () => {
+        projectsSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
 
     useEffect(() => {
@@ -36,12 +41,15 @@ const Home = () => {
                 <div className="container slide-up">
                     <h1 style={{ fontSize: '3rem', marginBottom: '20px' }}>Building Dreams, Creating Reality</h1>
                     <p style={{ fontSize: '1.2rem', maxWidth: '600px', margin: '0 auto 30px' }}>We deliver top-tier business solutions for clients worldwide.</p>
-                    <button className="btn" onClick={scrollToContact}>Get in Touch</button>
+                    <div style={{ display: 'flex', gap: '15px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                        <button className="btn" onClick={scrollToProjects}>View Our Work</button>
+                        <button className="btn" onClick={scrollToContact} style={{ background: '#f39c12' }}>Get in Touch</button>
+                    </div>
                 </div>
             </section>
 
             {/* Projects Section - Cinematic Slider */}
-            <section id="projects" className="projects-section">
+            <section id="projects" className="projects-section" ref={projectsSectionRef}>
                 <div className="container">
                     <h2 style={{ textAlign: 'center', marginBottom: '40px' }}>Our Projects</h2>
                     {projects.length > 0 ? (
