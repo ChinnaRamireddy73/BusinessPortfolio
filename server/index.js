@@ -19,10 +19,7 @@ app.use(cors(corsOptions));
 app.use(express.json());
 
 // Database Connection (MongoDB Atlas)
-mongoose.connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-})
+mongoose.connect(process.env.MONGO_URI)
     .then(async () => {
         console.log('MongoDB Connected');
         await seedAdmin();
