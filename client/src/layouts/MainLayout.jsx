@@ -21,7 +21,6 @@ const MainLayout = () => {
                             <li><a href="#contact">Contact</a></li>
                         </ul>
                     </nav>
-                    <Link to="/contact" className="btn btn-sm">Get in Touch</Link>
                 </div>
             </header>
 
