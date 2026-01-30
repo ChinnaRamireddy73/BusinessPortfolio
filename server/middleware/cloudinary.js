@@ -20,8 +20,8 @@ const storage = new CloudinaryStorage({
 });
 
 const fileFilter = (req, file, cb) => {
-    // Accept images only
-    if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
+    // Accept images only (case-insensitive)
+    if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/i)) {
         return cb(new Error('Only image files are allowed!'), false);
     }
     cb(null, true);
