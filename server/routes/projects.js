@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Project = require('../models/Project');
-const upload = require('../middleware/upload');
+const { upload } = require('../middleware/cloudinary');
 const auth = require('../middleware/auth');
 
 // Get all projects
@@ -20,7 +20,7 @@ router.post('/', auth, upload.single('image'), async (req, res) => {
     let image = '';
 
     if (req.file) {
-        image = `/uploads/${req.file.filename}`;
+        image = req.file.path; // Cloudinary URL
     }
 
     const project = new Project({
@@ -48,7 +48,7 @@ router.put('/:id', auth, upload.single('image'), async (req, res) => {
         if (req.body.description) project.description = req.body.description;
         if (req.body.link) project.link = req.body.link;
         if (req.file) {
-            project.image = `/uploads/${req.file.filename}`;
+            project.image = req.file.path; // Cloudinary URL
         }
 
         const updatedProject = await project.save();

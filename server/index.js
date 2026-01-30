@@ -1,25 +1,36 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const path = require('path');
 const seedAdmin = require('./utils/seedAdmin');
 require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware
-app.use(cors());
-app.use(express.json());
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// CORS Configuration for Production
+const corsOptions = {
+    origin: process.env.CLIENT_URL || 'http://localhost:5173',
+    credentials: true,
+    optionsSuccessStatus: 200
+};
 
-// Database Connection
-mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/business_portfolio')
+// Middleware
+app.use(cors(corsOptions));
+app.use(express.json());
+
+// Database Connection (MongoDB Atlas)
+mongoose.connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+})
     .then(async () => {
         console.log('MongoDB Connected');
         await seedAdmin();
     })
-    .catch(err => console.log(err));
+    .catch(err => {
+        console.error('MongoDB Connection Error:', err);
+        process.exit(1);
+    });
 
 // Routes Placeholder
 app.get('/', (req, res) => {

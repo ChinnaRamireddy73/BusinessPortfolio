@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Client = require('../models/Client');
-const upload = require('../middleware/upload');
+const { upload } = require('../middleware/cloudinary');
 const auth = require('../middleware/auth');
 
 // Get all clients
@@ -20,7 +20,7 @@ router.post('/', auth, upload.single('image'), async (req, res) => {
     let image = '';
 
     if (req.file) {
-        image = `/uploads/${req.file.filename}`;
+        image = req.file.path; // Cloudinary URL
     }
 
     const client = new Client({
@@ -48,7 +48,7 @@ router.put('/:id', auth, upload.single('image'), async (req, res) => {
         if (req.body.designation) client.designation = req.body.designation;
         if (req.body.description) client.description = req.body.description;
         if (req.file) {
-            client.image = `/uploads/${req.file.filename}`;
+            client.image = req.file.path; // Cloudinary URL
         }
 
         const updatedClient = await client.save();
