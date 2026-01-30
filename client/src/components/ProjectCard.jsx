@@ -5,7 +5,7 @@ const ProjectCard = ({ project }) => {
     <div className="cinematic-card">
       <div className="cinematic-image-wrapper">
         <img
-          src={`http://localhost:5000${project.image}`}
+          src={project.image}
           alt={project.name}
           className="cinematic-image"
           onError={(e) => {
