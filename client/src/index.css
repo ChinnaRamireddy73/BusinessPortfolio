@@ -227,28 +227,51 @@ section {
 /* Header */
 .header {
     background: #fff;
-    box-shadow: var(--shadow-sm);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     position: sticky;
     top: 0;
     z-index: 1000;
-    padding: 15px 0;
+    padding: 18px 0;
 }
 
 .nav-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 50px;
+}
+
+.nav-container .logo {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+}
+
+.nav {
+    flex: 1;
+    display: flex;
+    justify-content: center;
 }
 
 .nav-list {
     display: flex;
-    gap: 30px;
+    gap: 40px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-list li {
+    margin: 0;
 }
 
 .nav-list a {
     font-weight: 500;
     color: var(--dark-blue);
     position: relative;
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: color 0.3s ease;
 }
 
 .nav-list a::after {
@@ -256,10 +279,10 @@ section {
     position: absolute;
     width: 0;
     height: 2px;
-    bottom: -4px;
+    bottom: -6px;
     left: 0;
-    background-color: var(--accent-color);
-    transition: width 0.3s;
+    background-color: var(--primary-color);
+    transition: width 0.3s ease;
 }
 
 .nav-list a:hover::after {
